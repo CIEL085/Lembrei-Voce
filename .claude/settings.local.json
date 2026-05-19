@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npx next *)",
+      "Bash(del \"c:\\\\Users\\\\gabri\\\\source\\\\repos\\\\Lembrei-Voce\\\\next.config.ts\")",
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\gabri\\\\source\\\\repos\\\\Lembrei-Voce\\\\app\\\\dashboard\\\\perfil\")",
+      "Bash(Out-Null)",
+      "Bash(Write-Output \"ok\")"
+    ]
+  }
+}
