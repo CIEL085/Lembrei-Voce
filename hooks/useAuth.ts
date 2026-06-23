@@ -6,10 +6,17 @@ import type { User } from '@supabase/supabase-js'
 
 export async function signUp(nome: string, email: string, senha: string, whatsapp: string) {
   const supabase = createClient()
-  const { data, error } = await supabase.auth.signUp({
+  const whatsappDigitos = whatsapp.replace(/\D/g, '')
+  const { error } = await supabase.auth.signUp({
     email,
     password: senha,
-    options: { data: { nome } },
+    options: {
+      data: {
+        nome,
+        whatsapp: whatsappDigitos,
+        telefone: whatsappDigitos,
+      },
+    },
   })
 
   if (error) {
@@ -17,13 +24,6 @@ export async function signUp(nome: string, email: string, senha: string, whatsap
       ? 'Este email já está cadastrado.'
       : 'Erro ao criar conta. Tente novamente.'
     return { error: msg }
-  }
-
-  if (data.user) {
-    await supabase
-      .from('profiles')
-      .update({ whatsapp, telefone: whatsapp })
-      .eq('user_id', data.user.id)
   }
 
   return { error: null }

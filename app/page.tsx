@@ -1,5 +1,14 @@
 import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase-server'
+import { BackgroundPaths } from '@/components/BackgroundPaths'
 
-export default function Home() {
-  redirect('/dashboard/adicionar')
+export default async function Home() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect('/dashboard/adicionar')
+  }
+
+  return <BackgroundPaths />
 }

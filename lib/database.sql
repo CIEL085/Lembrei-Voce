@@ -113,13 +113,21 @@ create policy "Usuários deletam apenas seus próprios salários"
 
 -- Trigger para criar perfil automaticamente ao registrar usuário
 create or replace function public.handle_new_user()
-returns trigger as $$
+returns trigger
+security definer
+set search_path = public
+as $$
 begin
-  insert into public.profiles (user_id, nome)
-  values (new.id, coalesce(new.raw_user_meta_data->>'nome', new.email));
+  insert into public.profiles (user_id, nome, whatsapp, telefone)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'nome', new.email),
+    new.raw_user_meta_data->>'whatsapp',
+    new.raw_user_meta_data->>'telefone'
+  );
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql;
 
 create or replace trigger on_auth_user_created
   after insert on auth.users
