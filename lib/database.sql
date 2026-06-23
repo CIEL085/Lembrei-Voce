@@ -1,3 +1,9 @@
+-- ============================================================
+-- LEMBREI VOCE - Schema completo e consolidado
+-- Pronto para rodar em um projeto Supabase novo do zero.
+-- Basta copiar e executar no SQL Editor do Supabase.
+-- ============================================================
+
 -- Habilitar extensão de UUID
 create extension if not exists "uuid-ossp";
 
@@ -6,6 +12,12 @@ create table if not exists profiles (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references auth.users(id) on delete cascade not null unique,
   nome text not null,
+  telefone text,
+  whatsapp text,
+  cpf text,
+  data_nascimento text,
+  avatar_url text,
+  notif_whatsapp boolean not null default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -15,6 +27,7 @@ create table if not exists contas (
   user_id uuid references auth.users(id) on delete cascade not null,
   nome_banco text not null,
   categoria text not null default 'Outro',
+  dia_vencimento integer,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -111,23 +124,3 @@ $$ language plpgsql security definer;
 create or replace trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
-
--- ============================================================
--- MIGRAÇÃO (executar apenas se já existe a tabela contas antiga)
--- ============================================================
--- Se você já tem dados na versão anterior (contas com valor/parcelas),
--- rode os comandos abaixo no SQL Editor do Supabase para migrar:
---
--- 1. Criar a tabela compras (acima já faz isso via create table if not exists)
---
--- 2. Migrar dados existentes para compras:
--- INSERT INTO compras (conta_id, user_id, descricao, valor, parcela_atual, total_parcelas)
--- SELECT id, user_id, nome_banco, valor, parcela_atual, total_parcelas
--- FROM contas
--- WHERE valor > 0;
---
--- 3. Remover colunas antigas de contas:
--- ALTER TABLE contas DROP COLUMN IF EXISTS valor;
--- ALTER TABLE contas DROP COLUMN IF EXISTS parcela_atual;
--- ALTER TABLE contas DROP COLUMN IF EXISTS total_parcelas;
--- ============================================================
